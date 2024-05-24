@@ -1,5 +1,7 @@
 <script setup>
     import {allRows,getProjectRows} from '@/composables/useSheet';
+    import { useDayjs } from '#dayjs' 
+    const dayjs = useDayjs()
 
     const valid = ref(true)
     const projectName = ref(null)
@@ -10,6 +12,7 @@
     const amount = ref(null)
     const kamoku = ref(null)
     const date = ref(null)
+    const comment = ref(null)
     let project = ref(null)
     let kamokuItems = ref(null)
     const result = ref([])
@@ -17,6 +20,12 @@
     kamokuItems = kamokuData.value.values.map(item => item[0]);
     let {data:projectData} = await getProjectRows()
     project = projectData.value.values.map(item => item[0]);
+
+    function submitForm() {
+        alert(`expenses\n${projectName.value}\n${kamoku.value}\n${amount.value}\n${dayjs(date.value).format('YYYY/MM/DD')}\n${comment.value}`)
+    }
+
+    
     
 </script>
 
@@ -27,6 +36,7 @@
     <v-select v-model="kamoku" label="勘定科目" :items="kamokuItems" required></v-select>
     <v-text-field v-model="amount" label="金額"  prefix="￥" :rules="amountRules" @input="formatAmount"></v-text-field>
     <v-text-field v-model="date" label="日付" type="date"></v-text-field>
+    <v-text-field v-model="comment" label="メモ"></v-text-field>
     <v-btn color="primary" @click="submitForm">送信</v-btn>
   </v-form>
 </template>
