@@ -23,13 +23,52 @@ export async function getProjectRows() {
     return await useFetch(url)
 }
 
+export async function getEarnKamokuRows() {
+    sheetRange = "売上分類!A2:A";
+    const { SPREAD_SHEET_ID, GOOGLE_API_KEY } = getVars();
+    const url = 
+        `https://sheets.googleapis.com/v4/spreadsheets/${SPREAD_SHEET_ID}/values/${sheetRange}?key=${GOOGLE_API_KEY}`
+    return await useFetch(url)
+}
+
+export async function getPrivateKamokuRows() {
+    sheetRange = "プライベート管理!A2:A";
+    const { SPREAD_SHEET_ID, GOOGLE_API_KEY } = getVars();
+    const url = 
+        `https://sheets.googleapis.com/v4/spreadsheets/${SPREAD_SHEET_ID}/values/${sheetRange}?key=${GOOGLE_API_KEY}`
+    return await useFetch(url)
+}
+
 export async function singleRow(row) {
     const { SPREAD_SHEET_ID, GOOGLE_API_KEY } = getVars();
 
     const rowRange = `Sheet1!A${row}:D${row}`
 
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREAD_SHEET_ID}/values/${rowRange}?key=${GOOGLE_API_KEY}`
-    return await useFetch(url)
+    const response = await useFetch(url)
+    return response.data
+}
+
+export async function analyticsRows() {
+    const { SPREAD_SHEET_ID, GOOGLE_API_KEY } = getVars();
+    
+    const inputEarningRange = "売上入力!A:G";
+    const inputExpensisRange = "経費入力!A:H";
+    
+    const earningUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREAD_SHEET_ID}/values/${inputEarningRange}?key=${GOOGLE_API_KEY}`;
+    const expensisUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREAD_SHEET_ID}/values/${inputExpensisRange}?key=${GOOGLE_API_KEY}`;
+    
+    try {
+        const [earningResponse, expensisResponse] = await Promise.all([useFetch(earningUrl), useFetch(expensisUrl)]);
+        
+        return {
+            earningData: earningResponse.data,
+            expensesData: expensisResponse.data,
+        };
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return { error };
+    }
 }
 
 export async function getAllData() {

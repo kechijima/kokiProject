@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@nuxtjs/composition-api": "^0.34.0",
+    "chart.js": "^4.4.3",
     "dayjs": "^1.11.11",
     "googleapis": "^137.1.0",
     "nuxt": "^3.11.2",
     "vue": "^3.4.27",
+    "vue-chartjs": "^5.3.1",
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
