@@ -1,10 +1,10 @@
 <template>
     <v-container>
       <!-- 事業詳細のセレクトボックス -->
-      <v-form ref="form" v-model="valid" lazy-validation class="mt-6 ml-6" style="width: 50%;">
+      <v-form ref="form" v-model="valid" lazy-validation class="mt-6 mr-6" style="width: 80%;">
         <h2 class="my-6">売上入力</h2>
         <v-select v-model="selectedDetail" :items="details" label="事業詳細を選択" @update:modelValue="updateType" required></v-select>
-        <v-select v-model="seikyuType" :items="seikyuTypes" label="請求タイプ" required></v-select>
+        <v-select v-show="false" v-model="seikyuType" :items="seikyuTypes" label="請求タイプ" required></v-select>
         <v-text-field v-show="false" label="非表示の項目" v-model="selectedType"></v-text-field>        
         <v-text-field label="請求日" v-model="seikyuDate" input type="date"></v-text-field>
         <v-select v-model="selectedClient" :items="clientCandidates" label="取引先を選択" item-title="name" item-value="name" required></v-select>
@@ -66,6 +66,7 @@
   const parsedDate = dayjs(seikyuDate.value);
 
   onMounted(async () => {
+    initializeLiff('2005378903-Gp50zEpg');
     try {
       const data = await getProjectData();
       projectData.value = data;
@@ -143,13 +144,51 @@
 
   // フォーム送信
   const submitForm = () => {
-    if(seikyuType === '定期'){
-      const message = `earnings\n${selectedDetail.value}\n${seikyuType.value}\n${seikyuDate.value}\n${selectedClient.value}\n${uriagekingaku.value}\n${kenmei.value}\n${kaishibi.value}\n${shuryobi.value}\n\n${memo.value}`;
+    if(seikyuType.value === '定期'){
+      const message = `earnings|||${selectedDetail.value}||${dayjs(seikyuDate.value).format('YYYY/MM/DD')}|${selectedClient.value}|${kenmei.value}|${uriagekingaku.value}|${dayjs(kaishibi.value).format('YYYY/MM/DD')}|${dayjs(shuryobi.value).format('YYYY/MM/DD')}|||${memo.value}`;
       console.log(message);
+      sendMessages(message);
     }else{
-      const message = `earnings\n${selectedDetail.value}\n${seikyuType.value}\n${seikyuDate.value}\n${selectedClient.value}\n${uriagekingaku.value}\n${kenmei.value}\n\n\n${shiharaikigenbi.value}\n${memo.value}`;
+      const message = `earnings|||${selectedDetail.value}||${dayjs(seikyuDate.value).format('YYYY/MM/DD')}|${selectedClient.value}|${kenmei.value}|${uriagekingaku.value}||||${dayjs(shiharaikigenbi.value).format('YYYY/MM/DD')}|${memo.value}`;
       console.log(message);
+      sendMessages(message);
     }
   };
+
+  // LIFFの初期化
+  function initializeApp(){
+      liff.getProfile().then(profile => {
+          console.log('User profile:', profile);
+      }).catch((err) => {
+          console.log('Failed to get profile', err);
+      });
+  }
+
+  function initializeLiff(liffId) {
+      const liffSDKUrl = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
+      const script = document.createElement('script');
+      script.src = liffSDKUrl;
+      script.onload = () => {
+          liff.init({ liffId: liffId })
+          .then(() => {
+              initializeApp();
+          })
+          .catch((err) => {
+              console.log('LIFF Initialization failed ', err);
+          });
+      };
+      document.body.appendChild(script);
+  }
+
+  function sendMessages(message) {
+      liff.sendMessages([{
+          type: 'text',
+          text: message
+      }]).then(function() {
+          liff.closeWindow();
+      }).catch(function(error) {
+          console.error(error);
+      });
+  }
   </script>
   

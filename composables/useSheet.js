@@ -10,8 +10,7 @@ const getVars = () => {
 export async function getKamokuRows() {
     sheetRange = "経費科目!A3:A";
     const { SPREAD_SHEET_ID, GOOGLE_API_KEY } = getVars();
-    const url = 
-        `https://sheets.googleapis.com/v4/spreadsheets/${SPREAD_SHEET_ID}/values/${sheetRange}?key=${GOOGLE_API_KEY}`
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREAD_SHEET_ID}/values/${sheetRange}?key=${GOOGLE_API_KEY}`
     return await useFetch(url)
 }
 
@@ -33,10 +32,6 @@ export async function getProjectData() {
     const projectMap = {};
   
     rows.forEach(([type, detail, billingType, itemId, account, invoiceTitle,bikou]) => {
-    //   if (!projectMap[type]) {
-    //     projectMap[type] = [];
-    //   }
-    //   projectMap[type].push(detail);
         if (!projectMap[detail]) {
             projectMap[detail] = {
                 type,
